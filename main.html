@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poke Breeding Tool - Main</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Target Pokémon section -->
+<section id="targetSection">
+    <div id="targetForm">
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <div>
+                <label for="targetName">Name:</label>
+                <select id="targetName"></select>
+            </div>
+            <div>
+                <label for="targetNature">Nature:</label>
+                <select id="targetNature"></select>
+            </div>
+            <div>
+                <label for="targetAbility">Ability:</label>
+                <select id="targetAbility"></select>
+            </div>
+            <div>
+                <label for="targetShiny">Shiny:</label>
+                <select id="targetShiny"></select>
+            </div>
+            <div>
+                <label for="targetGen">Generation:</label>
+                <select id="targetGen"></select>
+            </div>
+        </div>
+
+        <!-- IVs row -->
+        <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+            <div><label for="ivHP">HP:</label><input type="number" id="ivHP" min="0" max="31"></div>
+            <div><label for="ivAtk">Atk:</label><input type="number" id="ivAtk" min="0" max="31"></div>
+            <div><label for="ivDef">Def:</label><input type="number" id="ivDef" min="0" max="31"></div>
+            <div><label for="ivSpAtk">SpAtk:</label><input type="number" id="ivSpAtk" min="0" max="31"></div>
+            <div><label for="ivSpDef">SpDef:</label><input type="number" id="ivSpDef" min="0" max="31"></div>
+            <div><label for="ivSpe">Spe:</label><input type="number" id="ivSpe" min="0" max="31"></div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Data table section -->
+    <section id="dataSection">
+        <h2>Dataset</h2>
+        <div id="tableContainer"></div>
+        <button id="addRowBtn">Add New Entry</button>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="js/mainPage.js"></script> 
+    <script src="js/targetMon.js"></script> 
+</body>
+</html>

@@ -4,6 +4,21 @@ const targetName = document.getElementById("targetName");
 const targetAbility = document.getElementById("targetAbility");
 const targetNature = document.getElementById("targetNature");
 const targetShiny = document.getElementById("targetShiny");
+const unlockCheckbox = document.getElementById("unlockTargetMon");
+
+const targetMonFields = [
+    "targetName",
+    "targetGen",
+    "targetAbility",
+    "targetNature",
+    "targetShiny",
+    "ivHP",
+    "ivAtk",
+    "ivDef",
+    "ivSpAtk",
+    "ivSpDef",
+    "ivSpe"
+];
 
 // Static Arrays
 const generations = [1,2,3,4,5,6,7,8,9];
@@ -75,8 +90,21 @@ async function loadAbilitiesForMon(speciesName) {
     const abilities = data.abilities.map(a => capitalize(a.ability.name));
     populateSelect(targetAbility, abilities);
 }
+function setEditability(condition, idArray) {
+    const isEditable = condition;
+
+    idArray.forEach(id => {
+        const e = document.getElementById(id);
+        if (!e) return;
+        e.disabled = !isEditable;
+    });
+}
 
 // Event Listeners
+unlockCheckbox.addEventListener("change", () => {
+    setEditability(unlockCheckbox.checked, targetMonFields);
+});
+
 targetGen.addEventListener("change", async () => {
     await loadMonsForGen(targetGen.value);
     targetAbility.innerHTML = "";
@@ -88,12 +116,15 @@ targetName.addEventListener("change", async () => {
 
 // Initialize Page
 async function init() {
+    unlockCheckbox.checked = false;
     targetGen.value = 4;
     targetShiny.value = "Yes";
 
     await loadMonsForGen(targetGen.value);
     await loadNatures();
     await loadAbilitiesForMon(targetName.value);
+
+    setEditability(unlockCheckbox.checked, targetMonFields);
 }
 init();
 

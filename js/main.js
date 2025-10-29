@@ -1,46 +1,134 @@
-// main.js
 
-// Load CSV
-const csvUpload = document.getElementById("csvUpload");
-const startScratch = document.getElementById("startScratch");
-const savedDataContainer = document.getElementById("savedDataContainer");
+import { loadNatures, loadMonsForGen, loadAbilitiesForMon } from "./pokeApiUtils.js";
+import { populateSelect, setEditability } from "./uiUtils.js";
 
-// Initialize data
-let pokemonData = [];
+// Elements
+const targetGen = document.getElementById("targetGen");
+const targetName = document.getElementById("targetName");
+const targetAbility = document.getElementById("targetAbility");
+const targetNature = document.getElementById("targetNature");
+const targetShiny = document.getElementById("targetShiny");
+const unlockCheckbox = document.getElementById("unlockTargetMon");
+const tableContainer = document.getElementById("tableContainer");
 
-//Check for saved data
-const savedData = localStorage.getItem("pokemonData");
-if (savedData) {
-    const loadSavedBtn = document.createElement("button");
-    loadSavedBtn.textContent = "Load Saved Data";
-    loadSavedBtn.addEventListener("click", () => {
-        pokemonData = JSON.parse(savedData);
-        window.location.href = "main.html";
+// Static Arrays
+const generations = [1,2,3,4,5,6,7,8,9];
+const shinyOptions = ["No","Yes"];
+
+const targetMonFields = [
+    "targetName",
+    "targetGen",
+    "targetAbility",
+    "targetNature",
+    "targetShiny",
+    "ivHP",
+    "ivAtk",
+    "ivDef",
+    "ivSpAtk",
+    "ivSpDef",
+    "ivSpe"
+];
+
+//Populate static dropdowns
+populateSelect(targetGen, generations);
+populateSelect(targetShiny, shinyOptions);
+
+// Event Listeners
+unlockCheckbox.addEventListener("change", () => {
+    setEditability(unlockCheckbox.checked, targetMonFields);
+});
+
+
+document.addEventListener("DOMContentLoaded", init());
+
+// Load dataset from localStorage
+let pokemonData = JSON.parse(localStorage.getItem("pokemonData") || "[]");
+
+// Render table
+function renderTable(data) {
+    if (!data || data.length === 0) {
+        tableContainer.innerHTML = "<p>No data available.</p>";
+        return;
+    }
+
+    const headers = Object.keys(data[0]);
+    let html = "<table border='1'><thead><tr>";
+
+    headers.forEach(h => html += `<th>${h}</th>`);
+    html += "</tr></thead><tbody>";
+
+    data.forEach(row => {
+        html += "<tr>";
+        headers.forEach(h => html += `<td>${row[h] || ""}</td>`);
+        html += "</tr>";
     });
-    savedDataContainer.appendChild(loadSavedBtn);
+
+    html += "</tbody></table>";
+    tableContainer.innerHTML = html;
 }
 
-// Start from scratch
-startScratch.addEventListener("click", () => {
-  pokemonData = [];
-  localStorage.setItem("pokemonData", JSON.stringify(pokemonData));
-  window.location.href = "main.html";
-});
+// Initialize Page
+async function init() {
+    const targetData = JSON.parse(localStorage.getItem("targetPokemon"));
 
+    await setTargetFromLocal(targetData);
 
-// Handle CSV upload
-csvUpload.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    targetGen.addEventListener("change", async () => {
+        await loadMonsForGen(targetGen.value, targetName);
+        await loadAbilitiesForMon(targetName.value, targetAbility);
 
-    Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-            pokemonData = results.data;
-            localStorage.setItem("pokemonData", JSON.stringify(pokemonData));
-            window.location.href = "main.html";
-        }
+        targetData.name = targetName.value;
+        targetData.ability = targetAbility.value;
+        targetData.gen = targetGen.value;
+        localStorage.setItem("targetPokemon", JSON.stringify(targetData));
     });
-});
 
+    targetName.addEventListener("change", async () => {
+        await loadAbilitiesForMon(targetName.value, targetAbility);
+        targetData.ability = targetAbility.value;
+
+        targetData.name = targetName.value;
+        localStorage.setItem("targetPokemon", JSON.stringify(targetData));
+    });
+    
+    targetAbility.addEventListener("change", () => {
+        targetData.ability = targetAbility.value;
+        localStorage.setItem("targetPokemon", JSON.stringify(targetData));
+    });
+
+    targetShiny.addEventListener("change", () => {
+        targetData.shiny = targetShiny.value;
+        localStorage.setItem("targetPokemon", JSON.stringify(targetData));
+    });
+
+    targetNature.addEventListener("change", () => {
+        targetData.nature = targetNature.value;
+        localStorage.setItem("targetPokemon", JSON.stringify(targetData));
+    });
+
+    setEditability(unlockCheckbox.checked, targetMonFields);
+    renderTable(pokemonData);
+}
+
+async function setTargetFromLocal(localTarget) {
+    targetGen.value = localTarget.gen;
+    targetShiny.value = localTarget.shiny;
+
+    await loadMonsForGen(targetGen.value, targetName);
+    await loadNatures(targetNature);
+    await loadAbilitiesForMon(targetName.value, targetAbility);
+    
+    targetName.value = localTarget.name;
+    targetAbility.value = localTarget.ability;
+    targetNature.value = localTarget.nature;
+}
+
+async function setTargetDefaults() {
+    unlockCheckbox.checked = false;
+    targetGen.value = 4;
+    targetShiny.value = "Yes";
+
+    await loadMonsForGen(targetGen.value, targetName);
+    await loadNatures(targetNature);
+    await loadAbilitiesForMon(targetName.value, targetAbility);
+}

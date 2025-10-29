@@ -1,6 +1,7 @@
 
 import { loadNatures, loadMonsForGen, loadAbilitiesForMon } from "./pokeApiUtils.js";
 import { populateSelect, } from "./uiUtils.js";
+import { TargetPokemon } from "./pokemon.js";
 
 const csvUpload = document.getElementById("csvUpload");
 const startScratch = document.getElementById("startScratch");
@@ -59,8 +60,18 @@ confirmModal.addEventListener("click", () => {
         nature: document.getElementById("modalNature").value,
         ability: document.getElementById("modalAbility").value,
         shiny: document.getElementById("modalShiny").value,
+        ivs: {
+            hp: parseInt(document.getElementById("iv-hp").value) || 0,
+            atk: parseInt(document.getElementById("iv-atk").value) || 0,
+            def: parseInt(document.getElementById("iv-def").value) || 0,
+            spa: parseInt(document.getElementById("iv-spa").value) || 0,
+            spd: parseInt(document.getElementById("iv-spd").value) || 0,
+            spe: parseInt(document.getElementById("iv-spe").value) || 0,
+        }
     };
-    localStorage.setItem("targetPokemon", JSON.stringify(data));
+
+    const target = new TargetPokemon(data);
+    localStorage.setItem("targetPokemon", JSON.stringify(target.toJSON()));
 
     window.location.href = "main.html";
 });

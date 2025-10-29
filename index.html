@@ -31,17 +31,29 @@
             <label>Name</label>
             <select id="modalName"></select>
 
-            <label>Nature</label>
-            <select id="modalNature"></select>
-
             <label>Ability</label>
             <select id="modalAbility"></select>
+
+            <label>Nature</label>
+            <select id="modalNature"></select>
 
             <label>Shiny</label>
             <select id="modalShiny">
                 <option>No</option>
                 <option>Yes</option>
             </select>
+
+            <div class="iv-inputs">
+                <label>IVs:</label>
+                <div class="iv-grid">
+                    <input type="number" id="iv-hp" placeholder="HP">
+                    <input type="number" id="iv-atk" placeholder="Atk">
+                    <input type="number" id="iv-def" placeholder="Def">
+                    <input type="number" id="iv-spa" placeholder="SpA">
+                    <input type="number" id="iv-spd" placeholder="SpD">
+                    <input type="number" id="iv-spe" placeholder="Spe">
+                </div>
+            </div>
 
             <div class="modal-actions">
                 <button id="cancelModal">Cancel</button>
